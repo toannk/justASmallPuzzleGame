@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        #bigBox {
+            margin: auto;
+            width: 400px;
+            height: 400px;
+        }
+
+        #bigBox>div {
+            width: 33%;
+            height: 33%;
+            padding: 1px;
+            float: left;
+            margin: 0;
+            border: 1px solid grey;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #a {
+            width: 400px;
+            height: 400px;
+            margin-left: 50px;
+            margin-top: 60px;
+        }
+
+        div {
+            float: left;
+        }
+
+        br {
+            clear: both;
+        }
+
+        h1 {
+            text-align: center;
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="msg">You win</h1>
+    <br />
+    <div>
+        <div id="bigBox">
+            <div class="smallBox" id="forgetMe"></div>
+            <div style="border: none;">&nbsp;</div>
+            <div style="border: none;">&nbsp;</div>
+            <div id="box1" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box2" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box3" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box4" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box5" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box6" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box7" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box8" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <div id="box9" class="smallBox"><img class="smallImg" draggable="true"></div>
+            <Span>Press to reset: </Span> <button id="reset">Reset</button>
+        </div>
+        <div id="a">
+            <h2>Sample:</h2>
+            <img src="./img/big.jpg" style="margin: auto;" />
+        </div>
+    </div>
+</body>
+<!-- Dear Lord, this thing looks terrible, i should've used flex-box from the beginning... -->
+<script>
+    window.addEventListener('load', () => {
+        document.addEventListener("dragover", function (e) {
+            if (e.target.className !== "smallBox") return;
+            e.preventDefault();
+        });
+
+        const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1));
+        const img = document.getElementsByClassName('smallImg');
+        const setSrcForImg = () => {
+            const arrImg = ["./img/1.jpg", "./img/2.jpg", "./img/3.jpg", "./img/4.jpg", "./img/5.jpg", "./img/6.jpg", "./img/7.jpg", "./img/8.jpg", "./img/9.jpg"];
+
+            for (let i = 0; i < img.length; i++) {
+                const srcPosition = randomNumber(0, arrImg.length - 1);
+                img[i].src = arrImg[srcPosition];
+                img[i].id = arrImg[srcPosition].substr(6, 1);
+                arrImg.splice(srcPosition, 1);
+            }
+        }
+        setSrcForImg();
+
+        for (let i = 0; i < img.length; i++) {
+            img[i].addEventListener('dragstart', e => e.dataTransfer.setData("text", e.target.id));
+        }
+
+        const smallBox = document.getElementsByClassName('smallBox');
+        for (let i = 0; i < smallBox.length; i++) {
+            smallBox[i].addEventListener('drop', e => {
+                e.preventDefault();
+                var data = e.dataTransfer.getData("text");
+                e.target.appendChild(document.getElementById(data));
+                if (check()) {
+                    document.getElementById("msg").style.display = "block";
+                }
+            });
+        }
+
+        const check = () => {
+            for (let i = 0; i < smallBox.length; i++) {
+                if (smallBox[i].id === "forgetMe") continue;
+                if (smallBox[i].childNodes.length !== 1 || i !== smallBox[i].childNodes[0].id - 0)
+                    return false;
+            }
+            return true;
+        }
+
+        document.getElementById('reset').addEventListener("click", () => {
+            setSrcForImg();
+            document.getElementById("msg").style.display = "none";
+        });
+    })
+</script>
+
+</html>
